@@ -35,6 +35,7 @@ void insertAtLast(int key)
     {
         head=(node *)malloc(sizeof(node));
         head->data=key;
+        head->next=head;
         return ;
     }
     else
@@ -153,8 +154,8 @@ void print(void)
         printf("%d\n",temp->data);
         temp=temp->next;
     }
-    printf("%d",temp->data);
-}
+    printf("%d\n",temp->data);      //niye bu satır var çünkü temp==head olana kadar diyince döngüye girmiyor ama temp->next!=head e
+}                                   //kadar deyince son elmanı yazdırmadığı için bu satır var :)
 int main()
 {
     int secim,number;
