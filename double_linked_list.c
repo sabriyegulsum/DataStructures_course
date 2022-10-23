@@ -164,4 +164,4 @@ int main()
 //int a=is_member(p);
 //printf("\nara:%d",a); 
 //bool return eden fonksiyon o düğüm var mı diye bakıyor sona geldiğinde eşitmi diye sorduğunda değilse 0 öyle ise 1 döndürüyor
-//sadece farklı gelen return (head==other) da return ün içine kkoşu koyup sonucu bir sayiya eşitlemeden direk return etmek mantıklıymiş :)
+//sadece farklı gelen return (head==other) da return ün içine koşul koyup sonucu bir sayiya eşitlemeden direk return etmek mantıklıymiş :)
