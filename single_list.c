@@ -1,6 +1,5 @@
 #include<stdlib.h>
 #include<stdio.h>
-
 typedef enum{false,true} bool;      //bool tipi c de olmadığı için kendimiz oluşturduk
 struct node{
     int data;
@@ -9,9 +8,9 @@ struct node{
 typedef struct node node;
 node * addHead(node *head, int key)                 //Normalde biz aşağıda yeni bir düğüm oluşturup değerlerini kullanıcıdan isteyip
 {                                                  //sonra o düğümü ekiyorduk.Ama şimdi yeni bir düğüm için yer alıyorum. Fonkiyona parametre olarak düğümümün içine atacağım
-    node *newNode =(node *)malloc(sizeof(node));  //değeri gönderiyorum sonra eşitliyorum tek fark bu. Birde head i mainde tanımlardık ama burada onuda parametre olarak alıyorum
-    newNode->data=key;
+    node *newNode =(node *)malloc(sizeof(node));  //değeri gönderiyorum sonra eşitliyorum tek fark bu.
     newNode->next=head;
+    newNode->data=key;
     head=newNode;
     return head;
 }
@@ -20,8 +19,13 @@ node *addLast(node *head,int key)
     node *temp;
     node *newNode=(node *)malloc(sizeof(node)); //yeni oluşturduğun düğümde node tipinde bir pointerdır. Bunu unutmamalısın 
     newNode->data=key;
+    if(head==NULL)
+    {
+        printf("listenizde hiç eleman yoktur.Lütfen bu elemani başa ekleyiniz");
+        return head;
+    }
     temp=head;
-    while(temp->next!=NULL)
+    while(temp->next!=NULL)                     //burada direk head ile işlem yaparsak null a kadar arama yapmamız gerekir ve head kaybolur. Bu yüzden bir temp oluşturp onu ilerletmeliyiz
         temp=temp->next;
     temp->next=newNode;
     newNode->next=NULL;
@@ -60,8 +64,9 @@ void print_Recursive(node *head)          //bu fonksiyonda parametre olarak aldi
         return;
     else
     {
-        printf("%d\n",head->data);
-        print_Recursive(head->next);
+        printf("%d\n",head->data);          //taktik:Dostum eğer bir listeyi sırasıyla rekursif yadırmak istiyorsan printf i fonksiyonu çağımadan öncesine yazmalısın ama
+        print_Recursive(head->next);        //listeyi tersten yazdırmak istiyorsan printf i fonksiyonu çağırdıktan sonra yazamalısın. Son fonksiyona kadar gider çağıma işlemi 
+                                            //bitince printfleri yazdırır :)
     }
 }
 void print_reverse(node *head)
@@ -82,46 +87,43 @@ int count(node *head)
     }
     return  counter;
 }
-int count_recursive(node *head)
-{
-    if(head==NULL)
-        return 0;
+int count_recursive(node *head)              //neden burada return var yukarıdaki yazdığım fonksiyonda return yok
+{                                            //Yukarıda geriye bir şey döndürmesini istemiyorum.Sadece printf'liyorum o kadar.Ama burada teker teker bütün elamanları null a
+    if(head==NULL)                          //kadar toplamam gerekiyor eğer sadece fonksiyonu geri çağırısam (return kullanmazsam)fonksiyonu +1 leyip gönderdin bu değerler tutulmadı 
+                                            //her çağırmada uçtu gitti.Ama return o sayıları toplayıp gelir bu yüzden eğer herhangi bir sonuç bulmak istiyorsan rekursif de 
+        return 0;                           //o zaman return kullanman gerekiyo
     else
-        return  count_recursive(head->next)+1;       //neden burada return var yukarıdaki yazdığım fonksiyonda return yok, sadece aynı fonksiyonu geri geri çağırmak var
-}                                                    //Yukarıda geriye bir şey döndürmesini istemiyorum.Sadece prinliyorum o kadar.Ama burada teker teker bütün elamanları null a
-node *locate(node *head,int key)                     //kadar toplamam gerekiyor eğer sadece fonksiyonu geri çağırısam (return kullanmazsam) hadi kenarına da +1 koyalım her bir 
-{                                                    //fonksiyonu +1 leyip gönderdin bu değerler tutulmadı her çağırmada uçtu gitti.Ama return o sayıları toplayıp gelir
-    node *locate;                                    //bu yüzden eğer her hangi bir sonuç bulmak istiyorsan rekursif de o zaman return kullanman gerekiyor
-    while(head!=NULL)
+        return  count_recursive(head->next)+1;       
+}                                                    
+void locate(node *head,int key)                      
+{                                                   
+    node *locate;                                    
+    while(head->data!=key)
     {
-        if(head->data!=key)
-            head=head->next;
-        else
-        {
-            locate=head;
-            break;                              //aradığın düğümü buldun burada döngüden çıkman lazım
+        if(head==NULL)          // Bu döngüde kontrolumü key i bulana kadar devam ettirdim ama eğer ki listnin sonuna gelirse diye koşul koyup return döndürüdüm.
+        {                       //yani döngüden çıkarsa key i bulmuş demektir 
+            printf("\naradiğiniz bilgi listede mevcut değildir\n");
+            return ;
         }
+        head=head->next;
+        //aradığın düğümü buldun burada döngüden çıkman lazım
     }
-    return locate;
+    printf("\nbulduğumuz elaman %d",head->data);
 }
 bool bool_locate(node *head,int key)
 {
-    node *locate;
     while(head!=NULL)
     {
         if(head->data!=key)
             head=head->next;
         else
-        {
-            locate=head;
             return true;
-        }
     }
     return false;
 }
 void concatentete(node *head1, node *head2)         //iki listeyi birleştiren fonksiyon
 {
-    if(head1==NULL)
+    if(head1==NULL)         //liste boş ise head1 in içine birleştirmek istediğimiz ikinci fonksiyonu atar :)
         head1=head2;
     else
     {
@@ -151,15 +153,15 @@ node *_remove(node *head,int key)               //C de zaten remove adında öze
     }
     else
     {
-        while(p->next->data!=key)       //kontrol kısmında döngünün biz normalde null a kadar derken key i bulana kadar deyip içeride null sa return edecek şekilde kontrol 
+        while(p->next->data!=key)       //kontrol kısmında döngünün biz normalde null a kadar derken,burada key i bulana kadar deyip içeride null ise return edecek şekilde kontrol 
         {                               //sağlıyor.Eğer döngüden çıktıysa kesinlikle key i bulmuş oluyor :))
             if(p->next->next==NULL)
             {
                 printf("Silinece eleman bulunamamistir");
                 return head;
-            }
-            p=p->next;
-        }
+            }                                          //birde data için bir sonraki düğümü kontrol ettiği için nasıl önceki kodlarımda p->next null mu diye kontrol sağlıyordum
+            p=p->next;                                 //şimdi ise p->next i kontrol ettiiğim için p->next->next null mu diye soruyorum
+        }                                               //bu fark da liste tek elemanlımı sorusundan kaynaklanıyor
         node *q;
         q=p->next;
         p->next=p->next->next;
@@ -168,13 +170,12 @@ node *_remove(node *head,int key)               //C de zaten remove adında öze
     }
 }
 void _print_reverse(node *head)             //bu attığım listeyi başka bir head2 poiter belirleyip addHead fonksiyonuna her elemanını attım
-{                                           //tekrardan yer aömam gerekmedi çünkü addHaed bunu yapıyor :)
+{                                           //tekrardan yer ayırmam gerekmedi çünkü addHaed bunu yapıyor :)
     node *head2,*temp;
-    temp=head;
-    while(temp!=NULL)
+    while(head!=NULL)
     {
-        head2=addHead(head2,temp->data);    //return döndürüyor bende hangi listemin (head2) döndürülmesini istiyorsam onu atıyorum.İki tane head ollması karışmasın
-        temp=temp->next;
+        head2=addHead(head2,head->data);    //return döndürüyor bende hangi listemin (head2) döndürülmesini istiyorsam onu atıyorum.İki tane head ollması karışmasın
+        head=head->next;
     }
     print(head2);
 }
@@ -240,15 +241,14 @@ int main()
             break;
         case 7:listInfo(head);
             break;
-        case 8:exit(1);
+        case 8:exit(1);         //burad exit(1) galiba while dan çıkmamızı sağlıyor
             break;
-        default: printf("Yanlis secim\n");
+        default: printf("Yanlis secim\n");      //eğer a için bu rakamlardan başka bir şey girerse
         }
     } 
     return 0;
 }
 //Ben normalde yazdığım liste kodlarında main kısmında head için bellekten hemen ilkten garantiye alıp mallloc ile yer alırdım ama burada hiç yer ayırma yok listeni başa ve 
 //sona ekle fonkisiyonları ile oluşturuyorsun zaten onların içindede malloc fonksiyonları var:)
-//yarın dewam ke
 //200 satırı göreceğiz inşAllah :)
 //edit:gördük 😊
